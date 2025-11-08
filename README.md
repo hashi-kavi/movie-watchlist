@@ -33,5 +33,5 @@ Notes & Next steps
 - Improve UI/UX.
 - Add tests for backend routes.
 
-License: MIT
+
 
