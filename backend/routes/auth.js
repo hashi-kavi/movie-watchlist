@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const auth = require('../middleware/auth');
 
 // POST /api/auth/signup
 router.post('/signup', async (req, res) => {
@@ -42,6 +43,19 @@ router.post('/login', async (req, res) => {
     res.json({ token, user: { id: user._id, username: user.username, email: user.email } });
   } catch (err) {
     console.error('Login error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// GET /api/auth/me - Validate token and get current user
+router.get('/me', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    res.json({ user: { id: user._id, username: user.username, email: user.email } });
+  } catch (err) {
+    console.error('Auth check error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });

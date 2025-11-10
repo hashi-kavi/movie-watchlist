@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useAuth } from '../contexts/AuthContext'
 import API from '../api'
 
 export default function Landing(){
   const [trendingMovies, setTrendingMovies] = useState([])
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
+  const { isLoggedIn, loading: authLoading } = useAuth()
 
   useEffect(() => {
     fetchTrendingMovies()
   }, [])
+
+  const handleStartJourney = () => {
+    if (isLoggedIn) {
+      navigate('/search')
+    } else {
+      navigate('/login')
+    }
+  }
 
   const fetchTrendingMovies = async () => {
     try {
@@ -82,11 +93,13 @@ export default function Landing(){
             transition={{ delay: 0.7 }}
             className="flex flex-col sm:flex-row gap-4 pt-4"
           >
-            <Link 
-              to="/signup" 
+            <motion.button
+              onClick={handleStartJourney}
               className="group relative px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 rounded-xl text-white font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-indigo-500/25 flex items-center justify-center gap-2"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <span>Start Your Journey</span>
+              <span>{isLoggedIn ? 'Go to Search' : 'Start Your Journey'}</span>
               <motion.svg 
                 animate={{ x: [0, 4, 0] }}
                 transition={{ repeat: Infinity, duration: 1.5 }}
@@ -97,7 +110,7 @@ export default function Landing(){
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </motion.svg>
-            </Link>
+            </motion.button>
             
             <Link 
               to="/search" 

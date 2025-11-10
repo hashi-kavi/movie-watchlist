@@ -37,5 +37,22 @@ router.get('/trending', async (req, res) => {
   }
 })
 
+// GET /api/tmdb/movie/:id - Get movie details
+router.get('/movie/:id', async (req, res) => {
+  const { id } = req.params
+  const key = process.env.TMDB_API_KEY
+  if (!key) return res.status(500).json({ message: 'TMDB API key not configured' })
+
+  try {
+    const tmdbRes = await axios.get(`https://api.themoviedb.org/3/movie/${id}`, {
+      params: { api_key: key }
+    })
+    res.json(tmdbRes.data)
+  } catch (err) {
+    console.error('TMDB movie details error', err?.response?.data || err.message)
+    res.status(502).json({ message: 'Error fetching movie details from TMDB', details: err?.response?.data || err.message })
+  }
+})
+
 module.exports = router
 
