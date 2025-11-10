@@ -21,5 +21,21 @@ router.get('/search', async (req, res) => {
   }
 })
 
+// GET /api/tmdb/trending - Get trending movies
+router.get('/trending', async (req, res) => {
+  const key = process.env.TMDB_API_KEY
+  if (!key) return res.status(500).json({ message: 'TMDB API key not configured' })
+
+  try {
+    const tmdbRes = await axios.get('https://api.themoviedb.org/3/trending/movie/week', {
+      params: { api_key: key }
+    })
+    res.json(tmdbRes.data)
+  } catch (err) {
+    console.error('TMDB trending error', err?.response?.data || err.message)
+    res.status(502).json({ message: 'Error fetching trending from TMDB', details: err?.response?.data || err.message })
+  }
+})
+
 module.exports = router
 
