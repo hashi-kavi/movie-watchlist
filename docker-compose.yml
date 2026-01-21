@@ -13,6 +13,7 @@ services:
       start_period: 20s
 
   backend:
+    image: hashinikavindya/movie-watchlist-backend:latest   # ✅ add this
     build: ./backend
     container_name: movie-backend
     ports:
@@ -28,6 +29,7 @@ services:
     restart: unless-stopped
 
   frontend:
+    image: hashinikavindya/movie-watchlist-frontend:latest  
     build: ./frontend
     container_name: movie-frontend
     ports:
