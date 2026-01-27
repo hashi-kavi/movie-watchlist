@@ -1,63 +1,53 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKERHUB = credentials('dockerhub-login')
+        BACKEND_IMAGE  = "hashikavi/movie-watchlist-backend:latest"
+        FRONTEND_IMAGE = "hashikavi/movie-watchlist-frontend:latest"
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/hashi-kavi/movie-watchlist.git'
-            }
-        }
-
-        stage('Build Backend Image') {
-            steps {
-                dir('backend') {
-                    script {
-                        sh '''
-                            echo "Building backend Docker image..."
-                            docker build -t hashikavi/movie-watchlist-backend:latest .
-                        '''
-                    }
-                }
-            }
-        }
-
-        stage('Build Frontend Image') {
-            steps {
-                dir('frontend') {
-                    script {
-                        sh '''
-                            echo "Building frontend Docker image..."
-                            docker build -t hashikavi/movie-watchlist-frontend:latest .
-                        '''
-                    }
-                }
+                git branch: 'main', url: 'https://github.com/hashi-kavi/movie-watchlist.git'
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USERNAME',
-                    passwordVariable: 'DOCKER_PASSWORD'
-                )]) {
-                    sh '''
-                        echo "Logging into Docker Hub..."
-                        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-                    '''
-                }
+                sh '''
+                    echo "$DOCKERHUB_PSW" | docker login -u "$DOCKERHUB_USR" --password-stdin
+                '''
             }
         }
 
-        stage('Push Images to Docker Hub') {
+        stage('Build Backend Image') {
             steps {
                 sh '''
-                    echo "Pushing backend image..."
-                    docker push hashikavi/movie-watchlist-backend:latest
+                    echo "Building backend..."
+                    docker build -t $BACKEND_IMAGE ./backend
+                '''
+            }
+        }
 
-                    echo "Pushing frontend image..."
-                    docker push hashikavi/movie-watchlist-frontend:latest
+        stage('Build Frontend Image') {
+            steps {
+                sh '''
+                    echo "Building frontend..."
+                    docker build -t $FRONTEND_IMAGE ./frontend
+                '''
+            }
+        }
+
+        stage('Push Images') {
+            steps {
+                sh '''
+                    echo "Pushing backend..."
+                    docker push $BACKEND_IMAGE
+
+                    echo "Pushing frontend..."
+                    docker push $FRONTEND_IMAGE
                 '''
             }
         }
@@ -65,21 +55,16 @@ pipeline {
         stage('Clean Up') {
             steps {
                 sh '''
-                    echo "Cleaning up..."
                     docker logout || true
-                    docker rmi hashikavi/movie-watchlist-backend:latest || true
-                    docker rmi hashikavi/movie-watchlist-frontend:latest || true
+                    docker rmi $BACKEND_IMAGE || true
+                    docker rmi $FRONTEND_IMAGE || true
                 '''
             }
         }
     }
 
     post {
-        success {
-            echo '✅ Build and push successful!'
-        }
-        failure {
-            echo '❌ Build failed. Check logs.'
-        }
+        success { echo '✅ Backend & Frontend images pushed successfully!' }
+        failure { echo '❌ Build failed. Check Console Output.' }
     }
 }
