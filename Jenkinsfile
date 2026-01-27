@@ -20,7 +20,7 @@ pipeline {
     stage('Login Docker Hub') {
       steps {
         withCredentials([usernamePassword(
-          credentialsId: 'dockerhub-creds',
+          credentialsId: 'dockerhub-login',
           usernameVariable: 'DOCKER_USER',
           passwordVariable: 'DOCKER_PASS'
         )]) {
@@ -44,3 +44,4 @@ pipeline {
     failure { echo "❌ Build failed. Check logs." }
   }
 }
+
