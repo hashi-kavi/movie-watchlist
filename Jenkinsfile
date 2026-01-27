@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB = credentials('dockerhub-login')
+        DOCKERHUB = credentials('dockerhub-creds')
         BACKEND_IMAGE  = "hashikavi/movie-watchlist-backend:latest"
         FRONTEND_IMAGE = "hashikavi/movie-watchlist-frontend:latest"
     }
