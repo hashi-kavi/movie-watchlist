@@ -1,21 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {
-  const [token, setToken] = useState(null);
-  const [user, setUser] = useState(null);
+  const { user, isLoggedIn, logout: authLogout } = useAuth();
   const [open, setOpen] = useState(false); // mobile menu
   const [dropdown, setDropdown] = useState(false);
   const navigate = useNavigate();
   const ddRef = useRef();
-
-  useEffect(() => {
-    const t = localStorage.getItem('token');
-    const u = localStorage.getItem('user');
-    setToken(t);
-    try { setUser(u ? JSON.parse(u) : null) } catch(e) { setUser(null) }
-  }, []);
 
   useEffect(() => {
     function onDoc(e){ if(ddRef.current && !ddRef.current.contains(e.target)) setDropdown(false) }
@@ -24,10 +17,7 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setToken(null);
-    setUser(null);
+    authLogout();
     navigate('/');
   };
 
@@ -52,7 +42,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-3">
           {/* desktop user area */}
-          {token ? (
+          {isLoggedIn ? (
             <div className="relative" ref={ddRef}>
               <button onClick={()=>setDropdown(d=>!d)} className="flex items-center gap-2 bg-white/6 hover:bg-white/8 px-2 py-1 rounded-lg">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-sm font-semibold text-white">{user?.username?.[0]?.toUpperCase() || 'U'}</div>

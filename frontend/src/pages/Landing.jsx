@@ -18,7 +18,7 @@ export default function Landing(){
     if (isLoggedIn) {
       navigate('/search')
     } else {
-      navigate('/login')
+      navigate('/signup')
     }
   }
 

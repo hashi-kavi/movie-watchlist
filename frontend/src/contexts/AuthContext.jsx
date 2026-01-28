@@ -31,6 +31,17 @@ export const AuthProvider = ({ children }) => {
         return
       }
 
+      // If we have a saved user, restore from cache immediately
+      if (savedUser) {
+        try {
+          const userData = JSON.parse(savedUser)
+          setUser(userData)
+          setIsLoggedIn(true)
+        } catch (e) {
+          console.error('Failed to parse saved user:', e)
+        }
+      }
+
       // Validate token by making a test API call
       const response = await API.get('/auth/me')
       

@@ -23,17 +23,22 @@ services:
       - MONGO_URI=mongodb://mongo:27017/moviewatchlist
       - JWT_SECRET=${JWT_SECRET:-mySecret}
       - TMDB_API_KEY=${TMDB_API_KEY}
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     depends_on:
       mongo:
         condition: service_healthy
     restart: unless-stopped
 
   frontend:
-    image: hashinikavindya/movie-watchlist-frontend:latest  
     build: ./frontend
     container_name: movie-frontend
     ports:
       - '3000:80'
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     depends_on:
       - backend
 

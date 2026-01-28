@@ -11,7 +11,7 @@ Stack
 Quick start (WSL2 with Docker)
 1. Copy repository to WSL mount, e.g. (on Windows path to repo):
    cd /mnt/d/movie-watchlist
-2. Create a TMDb API key and set it in `frontend/.env` (REACT_APP_TMDB_API_KEY).
+2. Create a TMDb API key and set it in the root `.env` (next to `docker-compose.yml`) as `TMDB_API_KEY`. Also set `JWT_SECRET` in the root `.env`.
 3. Build and run with Docker Compose:
 
 ```bash
@@ -23,9 +23,13 @@ Services
 - Backend API: http://localhost:5000/api
 - MongoDB: internal service `mongo:27017`
 
-Environment (defaults provided in service env files):
-- Backend: `backend/.env` (PORT, MONGO_URI, JWT_SECRET)
-- Frontend: `frontend/.env` (REACT_APP_BACKEND_URL, REACT_APP_TMDB_API_KEY)
+Environment (Docker Compose):
+- Root `.env` (next to `docker-compose.yml`): `TMDB_API_KEY`, `JWT_SECRET`
+- `docker-compose.yml` defines `MONGO_URI=mongodb://mongo:27017/moviewatchlist` for the backend service
+
+Notes:
+- Docker Compose only loads the root `.env` for variable substitution; per-service `.env` files are not loaded automatically.
+- Remove or avoid using `backend/.env` and `frontend/.env` when running via Docker to prevent conflicts.
 
 Notes & Next steps
 - Add validation and better error handling.
