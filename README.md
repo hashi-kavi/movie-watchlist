@@ -37,5 +37,18 @@ Notes & Next steps
 - Improve UI/UX.
 - Add tests for backend routes.
 
+**Jenkins Webhook (CI/CD)**
+- **Prereqs:** Reachable Jenkins server (public URL), GitHub repo with the [Jenkinsfile](Jenkinsfile) in the root.
+- **Jenkins job:**
+   - Create a Multibranch Pipeline (recommended) or Pipeline job pointing to your GitHub repo.
+   - Add GitHub credentials if private.
+   - Enable build triggers: “GitHub hook trigger for GITScm polling”.
+- **GitHub webhook:**
+   - Repo → Settings → Webhooks → Add webhook.
+   - Payload URL: `https://<your-jenkins-host>/github-webhook/`
+   - Content type: `application/json`
+   - Secret: optional but recommended; if set, configure the same secret in Jenkins (Manage Jenkins → Configure System → GitHub).
+- **Test:** Push a commit to `main` and confirm a build starts in Jenkins. Check “Recent deliveries” in GitHub Webhooks and Jenkins job logs for trigger status.
+
 
 
