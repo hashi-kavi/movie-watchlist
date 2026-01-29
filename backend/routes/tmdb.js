@@ -27,7 +27,7 @@ router.get('/trending', async (req, res) => {
   if (!key) return res.status(500).json({ message: 'TMDB API key not configured' })
 
   try {
-    const tmdbRes = await axios.get('https://api.themoviedb.org/3/trending/movie/week', {
+    const tmdbRes = await axios.get('https://api.themoviedb.org/3/trending/movie/day', {
       params: { api_key: key }
     })
     res.json(tmdbRes.data)

@@ -45,7 +45,7 @@ export default function MovieDetails() {
 
     try {
       if (isInWatchlist) {
-        await API.delete(`/watchlist/${id}`)
+        await API.delete('/watchlist', { data: { tmdbId: parseInt(id) } })
         setIsInWatchlist(false)
       } else {
         await API.post('/watchlist', {

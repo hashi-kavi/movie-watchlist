@@ -14,7 +14,18 @@ export default function Watchlist(){
     try{
       setLoading(true)
       const res = await API.get('/watchlist')
-      setWatchlist(res.data.watchlist || [])
+      const raw = res.data.watchlist || []
+      // Enrich with TMDb public rating for display (IMDb rating label)
+      const enriched = await Promise.all(raw.map(async (m) => {
+        try{
+          const id = m.tmdbId || m.id
+          const det = await API.get(`/tmdb/movie/${id}`)
+          return { ...m, imdbRating: det.data?.vote_average }
+        }catch(err){
+          return { ...m }
+        }
+      }))
+      setWatchlist(enriched)
     }catch(err){
       console.error(err)
     } finally {
@@ -111,7 +122,13 @@ export default function Watchlist(){
                 key={movie.tmdbId || movie.id}
                 variants={itemVariants}
               >
-                <MovieCard movie={movie} onRemove={removeMovie} />
+                <MovieCard 
+                  movie={movie} 
+                  onRemove={removeMovie} 
+                  isInWatchlist={true}
+                  userRating={movie.rating}
+                  imdbRating={movie.imdbRating}
+                />
               </motion.div>
             ))}
           </motion.div>

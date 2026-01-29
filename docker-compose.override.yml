@@ -1,0 +1,7 @@
+services:
+  backend:
+    build: ./backend
+    pull_policy: never
+  frontend:
+    build: ./frontend
+    pull_policy: never

@@ -26,3 +26,9 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Terraform
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfstate.*
+.terraform/
