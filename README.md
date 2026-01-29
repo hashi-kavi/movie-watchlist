@@ -21,15 +21,16 @@ docker compose up --build
 Services
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:5000/api
-- MongoDB: internal service `mongo:27017`
+- MongoDB: Atlas (via `MONGO_URI` in root `.env`)
 
 Environment (Docker Compose):
-- Root `.env` (next to `docker-compose.yml`): `TMDB_API_KEY`, `JWT_SECRET`
-- `docker-compose.yml` defines `MONGO_URI=mongodb://mongo:27017/moviewatchlist` for the backend service
+- Root `.env` (next to `docker-compose.yml`): `TMDB_API_KEY`, `JWT_SECRET`, `MONGO_URI`
+   - For Atlas, set `MONGO_URI` to your connection string. If your password has special characters like `#` or `%`, quote the value or URL-encode them (`#` → `%23`).
 
 Notes:
 - Docker Compose only loads the root `.env` for variable substitution; per-service `.env` files are not loaded automatically.
 - Remove or avoid using `backend/.env` and `frontend/.env` when running via Docker to prevent conflicts.
+- If you prefer a local MongoDB instead of Atlas, reintroduce the `mongo` service and set `MONGO_URI=mongodb://mongo:27017/moviewatchlist`.
 
 Notes & Next steps
 - Add validation and better error handling.
