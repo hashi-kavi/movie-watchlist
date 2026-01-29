@@ -53,14 +53,17 @@ router.delete('/', async (req, res) => {
   }
 });
 
+module.exports = router;
+
 // PUT /api/watchlist/rating - set rating (0-10) for a movie in watchlist
 router.put('/rating', async (req, res) => {
   try {
     const { tmdbId, rating } = req.body;
-    if (typeof tmdbId !== 'number') return res.status(400).json({ message: 'tmdbId required' });
-    if (rating !== null && rating !== undefined) {
-      const r = Number(rating);
-      if (Number.isNaN(r) || r < 0 || r > 10) return res.status(400).json({ message: 'rating must be between 0 and 10' });
+    if (tmdbId === undefined || tmdbId === null) return res.status(400).json({ message: 'tmdbId required' });
+
+    const r = rating === undefined || rating === null ? undefined : Number(rating);
+    if (r !== undefined && (Number.isNaN(r) || r < 0 || r > 10)) {
+      return res.status(400).json({ message: 'rating must be between 0 and 10' });
     }
 
     const user = await User.findById(req.user.id);
@@ -69,7 +72,7 @@ router.put('/rating', async (req, res) => {
     const item = user.watchlist.find(m => m.tmdbId === tmdbId);
     if (!item) return res.status(404).json({ message: 'Movie not in watchlist' });
 
-    item.rating = rating === null || rating === undefined ? undefined : Number(rating);
+    item.rating = r;
     await user.save();
     res.json({ watchlist: user.watchlist });
   } catch (err) {
@@ -77,7 +80,4 @@ router.put('/rating', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
-module.exports = router;
- 
 
