@@ -5,6 +5,8 @@ pipeline {
         DOCKERHUB = credentials('dockerhub-creds')
         BACKEND_IMAGE  = "hashinikavindya/movie-watchlist-backend:latest"
         FRONTEND_IMAGE = "hashinikavindya/movie-watchlist-frontend:latest"
+        // Disable BuildKit to avoid missing buildx plugin on agents
+        DOCKER_BUILDKIT = '0'
     }
 
     stages {
@@ -26,7 +28,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Building backend..."
-                    docker build -t $BACKEND_IMAGE ./backend
+                    DOCKER_BUILDKIT=0 docker build -t $BACKEND_IMAGE ./backend
                 '''
             }
         }
@@ -35,7 +37,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Building frontend..."
-                    docker build -t $FRONTEND_IMAGE ./frontend
+                    DOCKER_BUILDKIT=0 docker build -t $FRONTEND_IMAGE ./frontend
                 '''
             }
         }
