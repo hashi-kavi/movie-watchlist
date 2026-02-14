@@ -74,7 +74,7 @@ export default function Landing(){
             transition={{ delay: 0.3 }}
             className="text-5xl md:text-7xl font-bold leading-tight"
           >
-            Your favorite
+            Your personal
             <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent"> Movie Library</span>
           </motion.h1>
 
