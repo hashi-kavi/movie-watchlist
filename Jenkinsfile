@@ -5,7 +5,6 @@ pipeline {
         DOCKERHUB = credentials('dockerhub-creds')
         BACKEND_IMAGE  = "hashinikavindya/movie-watchlist-backend:latest"
         FRONTEND_IMAGE = "hashinikavindya/movie-watchlist-frontend:latest"
-        // Disable BuildKit to avoid missing buildx plugin on agents
         DOCKER_BUILDKIT = '0'
     }
 
@@ -54,18 +53,32 @@ pipeline {
             }
         }
         stage('Deploy to Server') {
-    steps {
-        sh '''
-            echo "Pulling latest images on server..."
-            docker pull $BACKEND_IMAGE
-            docker pull $FRONTEND_IMAGE
+  steps {
+    sh '''
+      echo "Pulling latest images..."
+      docker pull $BACKEND_IMAGE
+      docker pull $FRONTEND_IMAGE
 
-            echo "Restarting containers..."
-            docker restart movie-backend
-            docker restart movie-frontend
-        '''
-    }
+      echo "Ensuring network exists..."
+      docker network create movie-net || true
+
+      echo "Recreating backend..."
+      docker rm -f movie-backend || true
+      docker run -d --name movie-backend \
+        --network movie-net --network-alias backend \
+        -p 5000:5000 --restart unless-stopped \
+        $BACKEND_IMAGE
+
+      echo "Recreating frontend..."
+      docker rm -f movie-frontend || true
+      docker run -d --name movie-frontend \
+        --network movie-net \
+        -p 80:80 --restart unless-stopped \
+        $FRONTEND_IMAGE
+    '''
+  }
 }
+
 
 
         stage('Clean Up') {
