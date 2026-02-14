@@ -53,6 +53,20 @@ pipeline {
                 '''
             }
         }
+        stage('Deploy to Server') {
+    steps {
+        sh '''
+            echo "Pulling latest images on server..."
+            docker pull $BACKEND_IMAGE
+            docker pull $FRONTEND_IMAGE
+
+            echo "Restarting containers..."
+            docker restart movie-backend
+            docker restart movie-frontend
+        '''
+    }
+}
+
 
         stage('Clean Up') {
             steps {
